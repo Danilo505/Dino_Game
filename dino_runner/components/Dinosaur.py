@@ -75,3 +75,4 @@ class Dinosaur:
     def draw(self, screen: pygame.Surface):
         screen.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
 
+print("hello")
