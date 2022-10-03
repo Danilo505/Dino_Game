@@ -1,6 +1,8 @@
 import pygame
 from dino_runner.components.Dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.power_ups.power_up import PowerUp
+from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
 from dino_runner.utils.constants import BG, ICON, RUNNING, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
 
@@ -15,6 +17,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
+        self.power_up_manager = PowerUpManager()
         self.playing = False
         self.running = False
         self.game_speed = 20
@@ -33,6 +36,7 @@ class Game:
 
     def run(self):
         self.obstacle_manager.reset_obstacles()
+        self.power_up_manager.reset_power_ups()
         self.playing = True
         self.points =0
         while self.playing:
@@ -44,16 +48,17 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.playing = False
-                self.running = False
+                
 
     def update(self):
         self.points += 1
         if self.points % 100 == 0:
             self.game_speed += 1
-
+        self.player.check_invicibility()
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
+        self.power_up_manager.update(self, self.points)
 
     def draw(self):
         self.clock.tick(FPS)
@@ -62,6 +67,7 @@ class Game:
         self.draw_score()
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
+        self.power_up_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
@@ -116,7 +122,7 @@ class Game:
         self.draw_message_component(f"Your Score: {self.points}", 50)
         self.draw_message_component(f"Death Count: {self.death_count}", 100)
         
-        self.screen.blit(RUNNING[0], (half_screen_width -20, half_screen_height -120))
+        self.screen.blit(RUNNING[0], (half_screen_width -50, half_screen_height -120))
 
         pygame.display.update()
         self.handle_key_events_on_menu()
