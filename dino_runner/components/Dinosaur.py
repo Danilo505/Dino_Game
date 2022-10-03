@@ -1,12 +1,12 @@
-from pyexpat.errors import XML_ERROR_UNEXPECTED_STATE
+
 import pygame
 
 from pygame.sprite import Sprite
-from dino_runner.utils.constants import SHIELD_TYPE, DEFAULT_TYPE,DUCKING_SHIELD,JUMPING_SHIELD,RUNNING_SHIELD, JUMPING, RUNNING, DUCKING, SHIELD
+from dino_runner.utils.constants import DUCKING_HAMMER, HAMMER, HAMMER_TYPE, HEART_TYPE, JUMPING_HAMMER, RUNNING_HAMMER, SHIELD_TYPE, DEFAULT_TYPE,DUCKING_SHIELD,JUMPING_SHIELD,RUNNING_SHIELD, JUMPING, RUNNING, DUCKING, HEART_TYPE
 
-DUCK_IMG ={DEFAULT_TYPE: DUCKING, SHIELD_TYPE: DUCKING_SHIELD}
-JUMP_IMG ={DEFAULT_TYPE: JUMPING, SHIELD_TYPE: JUMPING_SHIELD}
-RUN_IMG ={DEFAULT_TYPE: RUNNING, SHIELD_TYPE: RUNNING_SHIELD}
+DUCK_IMG ={DEFAULT_TYPE: DUCKING, SHIELD_TYPE: DUCKING_SHIELD, HAMMER_TYPE: DUCKING_HAMMER, HEART_TYPE: DUCKING}
+JUMP_IMG ={DEFAULT_TYPE: JUMPING, SHIELD_TYPE: JUMPING_SHIELD, HAMMER_TYPE: JUMPING_HAMMER, HEART_TYPE: JUMPING}
+RUN_IMG ={DEFAULT_TYPE: RUNNING, SHIELD_TYPE: RUNNING_SHIELD, HAMMER_TYPE: RUNNING_HAMMER, HEART_TYPE: RUNNING}
 
 class Dinosaur(Sprite): 
     X_POS = 80
@@ -27,6 +27,11 @@ class Dinosaur(Sprite):
         self.jump_vel = self.JUMP_VEL
         self.shield = False
         self.shield_time_up = 0
+        self.hammer = False
+        self.hammer_time_up = 0
+        self.has_power_up = False
+        self.show_text = False
+        self.heart = False
         
     def update(self, user_input):
         if self.dino_run:
@@ -82,14 +87,3 @@ class Dinosaur(Sprite):
 
     def draw(self, screen: pygame.Surface):
         screen.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
-
-    def check_invicibility(self):
-        if self.shield:
-            time_shield= round((self.shield_time_up - pygame.time.get_ticks())/1000, 2)
-            if time_shield<0:
-                self.shield = False
-                self.update_to_defauld(SHIELD_TYPE)
-    
-    def update_to_defauld(self, current_type):
-        if self.type == current_type:
-           self.type = DEFAULT_TYPE
